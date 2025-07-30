@@ -20,10 +20,10 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "backend/config/config.env" });
 
 const mysqlPool = mysql.createPool({
-  host: "localhost",
+  host: "mysql.railway.internal",
   user: "root",
-  password: "password",
-  database: "unitradebot",
+  password: "KoKAcqwyXyyryZvMjVWoZyPNcHfBrByv",
+  database: "railway",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,

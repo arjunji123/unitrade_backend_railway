@@ -8,14 +8,14 @@
         "build": {
           "cmds": []
         },
+         "install": {
+          "cmds": [
+            "npm install"
+          ]
+        },
         "start": {
           "cmds": [
             "npm start"
-          ]
-        },
-        "install": {
-          "cmds": [
-            "npm install"
           ]
         }
       },

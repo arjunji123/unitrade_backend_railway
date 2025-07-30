@@ -15,7 +15,7 @@
         },
         "start": {
           "cmds": [
-            "node server.js"
+            "npm start"
           ]
         }
       },

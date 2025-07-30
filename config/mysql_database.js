@@ -20,7 +20,7 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "backend/config/config.env" });
 
 const mysqlPool = mysql.createPool({
-  host: "mysql.railway.internal",
+  host: "caboose.proxy.rlwy.net",
   user: "root",
   password: "KoKAcqwyXyyryZvMjVWoZyPNcHfBrByv",
   database: "railway",

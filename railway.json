@@ -2,24 +2,33 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
+    "buildCommand": "npm install",
     "nixpacksPlan": {
-      "providers": ["node"],
       "phases": {
-        "install": {
-          "cmds": ["npm install"]
-        },
         "build": {
           "cmds": []
         },
         "start": {
-          "cmds": ["npm start"]
+          "cmds": [
+            "npm start"
+          ]
+        },
+        "install": {
+          "cmds": [
+            "npm install"
+          ]
         }
-      }
+      },
+      "providers": [
+        "node",
+        "node"
+      ]
     }
   },
   "deploy": {
     "runtime": "V2",
     "numReplicas": 1,
+    "startCommand": "npm start",
     "sleepApplication": false,
     "multiRegionConfig": {
       "europe-west4-drams3a": {

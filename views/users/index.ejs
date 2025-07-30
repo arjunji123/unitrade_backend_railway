@@ -1,0 +1,331 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card" style="margin-top: 26px;">
+            <div class="card-body table-responsive">
+                <div class="row page_top_bar">
+                    <div class="col-12">
+                        <div class="col-6 heading float-left">
+                            <h4 class="mt-0 header-title">Users</h4>
+                        </div>
+                        <div class="col-6 btns float-left text-right">
+                            <a class="btn btn-primary" href="/admin/<%= module_slug %>/add">Add New</a>
+                        </div>
+                    </div>
+                </div>
+
+                <table id="responsive-datatable" class="table table-bordered dt-responsive nowrap">
+                    <!-- <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Name</th>
+                            <th>Mobile</th>
+                            <th>Email</th>
+                            <th>Created</th>
+                            <th>Referral Code</th>
+                            <th>Parent Name (id)</th>
+                            <th>Pending Coins</th>
+                            <th>Total Coins</th>
+                            <th>Status</th>
+                            <th>Screenshot</th>
+                            <th>Actions</th>
+                            <th>View</th>  New View Column 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% let serialNumber = 1; %>
+                        <% users.forEach(user => { %>
+                            <tr id="user-row-<%= user.id %>">
+                                <td><%= serialNumber++ %></td>
+                                <td><%= user.user_name %></td>
+                                <td><%= user.mobile %></td>
+                                <td><%= user.email %></td>
+                                <td><%= user.date_created %></td>
+                                <td><%= user.referral_code %></td>
+                                <td>
+                                    <%= user.parent_user_name 
+                                        ? `${user.parent_user_name} (${user.parent_id})` 
+                                        : `No Parent (${user.parent_id || "N/A"})` %>
+                                </td>
+                                <td>
+                                    <i class="fas fa-coins" style="color: gold; margin-right: 5px;"></i>
+                                    <%= user.pending_coin || 0 %>
+                                </td>
+                                <td>
+                                    <i class="fas fa-coins" style="color: gold; margin-right: 5px;"></i>
+                                    <%= user.coins || 0 %>
+                                </td>
+                                <td><%= parseInt(user.status) === 1 ? 'Active' : 'Inactive' %></td>
+                                <td>
+                                    <% if (user.pay_image) { %>
+                                        <button class="btn btn-info view-image" 
+                                            data-image="<%- process.env.BACKEND_URL %>uploads/<%= user.pay_image %>">
+                                            View Screenshot
+                                        </button>
+                                    <% } else { %>
+                                        No screenshot uploaded
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (parseInt(user.status) === 1) { %>
+                                        <form action="/admin/users/deactivate-user" method="POST" 
+                                            style="display:inline;" class="deactivate-form">
+                                            <input type="hidden" name="userId" value="<%= user.id %>">
+                                            <input type="hidden" name="status" value="0">
+                                            <button type="button" class="btn btn-sm btn-danger deactivate-button">
+                                                <i class="fas fa-toggle-off"></i> Deactivate
+                                            </button>
+                                        </form>
+                                    <% } else { %>
+                                        <form action="/admin/users/update-status" method="POST" 
+                                            style="display:inline;" class="activate-form">
+                                            <input type="hidden" name="userId" value="<%= user.id %>">
+                                            <input type="hidden" name="status" value="1">
+                                            <button type="button" class="btn btn-sm btn-success activate-button">
+                                                <i class="fas fa-toggle-on"></i> Activate
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                </td>
+                                <td class="action_box">
+                                    <a href="/admin/<%= module_slug %>/<%= user.id %>" title="View Details"><i class="fe-eye"></i></a>
+                                    <a href="/admin/user-tree-view/<%= user.id %>" title="User Tree"><i class="fe-users"></i></a>
+                                    <a href="/admin/<%= module_slug %>/edit/<%= user.id %>" title="Edit User"><i class="fe-edit"></i></a>
+                                    <a href="/admin/<%= module_slug %>/user-history/<%= user.id %>" title="User History"><i class="fe-clock"></i></a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody> -->
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for viewing images -->
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Screenshot</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="Screenshot" class="img-fluid" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .action_box{
+        display: flex;
+    }
+</style>
+
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script>
+    const BACKEND_URL = "<%= process.env.BACKEND_URL %>";
+    const MODULE_SLUG = "<%= module_slug %>";
+    $(document).ready(function () {
+        $("#responsive-datatable").DataTable({
+            serverSide: true,
+            processing: true,
+            stateSave:true,
+            pagingType: "simple_numbers",
+            lengthMenu: [10, 25, 50],
+            pageLength: 10, 
+            ajax: {
+                url: "/admin/users",
+                type: "GET",
+                data: function (d) {
+                    return {
+                        draw: d.draw, // Pass draw count for DataTables request tracking
+                        start: d.start, // Offset (starting row index)
+                        length: d.length, // Number of rows requested
+                        search: d.search.value, // Search query input
+                        orderColumn: d.order[0].column, // Column index for sorting
+                        orderDir: d.order[0].dir // Sorting direction (asc/desc)
+                    };
+                }
+            },
+            columns: [
+                { data: "id", title: "S.No."},  
+                { data: "user_name", title: "Name" },
+                { data: "mobile", title: "Mobile" },
+                { data: "email", title: "Email" },
+                { data: "date_created", title: "Created" },
+                { data: "referral_code", title: "Referral Code" },
+                { data: "parent_user_name", title: "Parent Name (id)",  render: function (data, type, row) {
+                    return data ? `${data} (${row.parent_id})` : `No Parent (${row.parent_id || "N/A"})`;
+                }},
+                { data: "pending_coin", title: "Pending Coins", render: function (data){
+                    return `<i class="fas fa-coins" style="color: gold; margin-right: 5px;"></i> ${data || 0}`;
+                }},
+                { data: "coins", title: "Total Coins" , render: function (data){
+                    return `<i class="fas fa-coins" style="color: gold; margin-right: 5px;"></i> ${data || 0}`;
+                }},
+                {
+                    data: "status",
+                    title: "Status",
+                    render: function (data) {
+                        return parseInt(data) === 1 ? "Active" : "Inactive";
+                    }
+                },
+                {
+                    data: "pay_image",
+                    title: "Screenshot",
+                    orderable: false,
+                    searchable: false,
+                    render: function (data) {
+                        return data 
+                            ? `<button class="btn btn-info view-image" data-image="${BACKEND_URL}uploads/${data}">View Screenshot</button>` 
+                            : "No screenshot uploaded";
+                    }
+                },
+                {
+                    data: "status",
+                    title: "Actions",
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        if (parseInt(data) === 1) {
+                            return `
+                                <form action="/admin/users/deactivate-user" method="POST" class="deactivate-form" style="display:inline;">
+                                    <input type="hidden" name="userId" value="${row.id}">
+                                    <input type="hidden" name="status" value="0">
+                                    <button type="button" class="btn btn-sm btn-danger deactivate-button">
+                                        <i class="fas fa-toggle-off"></i> Deactivate
+                                    </button>
+                                </form>
+                            `;
+                        } else {
+                            return `
+                                <form action="/admin/users/update-status" method="POST" class="activate-form" style="display:inline;">
+                                    <input type="hidden" name="userId" value="${row.id}">
+                                    <input type="hidden" name="status" value="1">
+                                    <button type="button" class="btn btn-sm btn-success activate-button">
+                                        <i class="fas fa-toggle-on"></i> Activate
+                                    </button>
+                                </form>
+                            `;
+                        }
+                    }
+                },
+                {
+                    data: "id",
+                    title: "View",
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        return `
+                            <div class="action_box">
+                                <a href="/admin/${MODULE_SLUG}/${data}" title="View Details">
+                                    <i class="fe-eye"></i>
+                                </a>
+                                <a href="/admin/user-tree-view/${data}" title="User Tree">
+                                    <i class="fe-users"></i>
+                                </a>
+                                <a href="/admin/${MODULE_SLUG}/edit/${data}" title="Edit User">
+                                    <i class="fe-edit"></i>
+                                </a>
+                                <a href="/admin/${MODULE_SLUG}/user-history/${data}" title="User History">
+                                    <i class="fe-clock"></i>
+                                </a>
+                            </div>
+                        `;
+                    }
+                }
+            ],
+            destroy: true, // ✅ Ensure DataTables doesn't retain old settings
+            retrieve: true,
+            deferRender: true
+        })
+    })
+</script>
+
+<script>
+    $(document).on('click', '.view-image', function () {
+        var imageUrl = $(this).data('image');
+        $('#modalImage').attr('src', imageUrl);
+        $('#imageModal').modal('show');
+    });
+
+    // Close modal when clicking "X" button
+    $(document).on('click', '.close', function () {
+        $('#imageModal').modal('hide');
+    });
+
+    $(document).on("click", ".activate-button", function (e) {
+        e.preventDefault();
+        const form = $(this).closest('form');
+        const userId = form.find('input[name="userId"]').val();
+        const status = form.find('input[name="status"]').val();
+
+        if (confirm("Are you sure you want to activate this user?")) {
+            $.ajax({
+                url: form.attr('action'),
+                method: 'POST',
+                data: { userId, status },
+                success: function (response) {
+                    if (response.success) {
+                        const row = $(`#user-row-${userId}`);
+                        row.find('td:nth-child(10)').text('Active');
+                        form.closest('td').html(`
+                            <form action="/admin/users/deactivate-user" method="POST" style="display:inline;" class="deactivate-form">
+                                <input type="hidden" name="userId" value=${userId}>
+                                <input type="hidden" name="status" value="0">
+                                <button type="button" class="btn btn-sm btn-danger deactivate-button">
+                                    <i class="fas fa-toggle-off"></i> Deactivate
+                                </button>
+                            </form>
+                        `);
+                    }
+                },
+                error: function (xhr) {
+                    console.error('Error:', xhr);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        }
+    });
+
+    $(document).on("click", ".deactivate-button", function (e) {
+        e.preventDefault();
+        const form = $(this).closest('form');
+        const userId = form.find('input[name="userId"]').val();
+        const status = form.find('input[name="status"]').val();
+
+        if (confirm("Are you sure you want to deactivate this user?")) {
+            $.ajax({
+                url: form.attr('action'),
+                method: 'POST',
+                data: { userId, status },
+                success: function (response) {
+                    if (response.success) {
+                        const row = $(`#user-row-${userId}`);
+                        row.find('td:nth-child(10)').text('Inactive');
+                        form.closest('td').html(`
+                            <form action="/admin/users/update-status" method="POST" style="display:inline;" class="activate-form">
+                                <input type="hidden" name="userId" value=${userId}>
+                                <input type="hidden" name="status" value="0">
+                                <button type="button" class="btn btn-sm btn-success activate-button">
+                                    <i class="fas fa-toggle-on"></i> Activate
+                                </button>
+                            </form>
+                        `);
+                    }
+                },
+                error: function (xhr) {
+                    console.error('Error:', xhr);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        }
+    });
+</script>

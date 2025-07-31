@@ -1,32 +1,34 @@
-// const mysql = require("mysql2/promise");
-// const dotenv = require("dotenv");
-// dotenv.config({ path: "backend/config/config.env" });
-
-// const mysqlPool = mysql.createPool({
-//   host: process.env.DB_HOST || "localhost",
-//   user: process.env.DB_USER || "unicoin_user",
-//   password: process.env.DB_PASSWORD || "Unitradethehub@12",
-//   database: process.env.DB_NAME || "unitrade",
-//   port: process.env.DB_PORT || 3306,
-//   waitForConnections: true,
-//   connectionLimit: 10,
-//   queueLimit: 0,
-// });
-
-// module.exports = mysqlPool;
+// backend/config/db.js
 
 const mysql = require("mysql2/promise");
 const dotenv = require("dotenv");
+
+// Load environment variables
 dotenv.config({ path: "backend/config/config.env" });
 
+// Create the connection pool
 const mysqlPool = mysql.createPool({
-  host: "caboose.proxy.rlwy.net",
-  user: "root",
-  password: "KoKAcqwyXyyryZvMjVWoZyPNcHfBrByv",
-  database: "railway",
-  port: "39411",
+  host: process.env.MYSQL_HOST || "caboose.proxy.rlwy.net",
+  user: process.env.MYSQL_USER || "root",
+  password: process.env.MYSQL_PASSWORD || "KoKAcqwyXyyryZvMjVWoZyPNcHfBrByv",
+  database: process.env.MYSQL_DATABASE || "railway",
+  port: process.env.MYSQL_PORT || 39411,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
 });
+
+// Optional: Test the connection (good for debugging during dev)
+async function testConnection() {
+  try {
+    const connection = await mysqlPool.getConnection();
+    console.log("✅ MySQL connection established.");
+    connection.release();
+  } catch (error) {
+    console.error("❌ Error connecting to MySQL:", error.message);
+  }
+}
+
+testConnection();
+
 module.exports = mysqlPool;

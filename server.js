@@ -26,11 +26,15 @@ mysqlPool
     console.error("Error establishing MySQL connection:", err);
   });
 
-const PORT = process.env.PORT || 5001;
-const server = app.listen(PORT, () => {
+const PORT = process.env.PORT || 4000;
+const HOST = "0.0.0.0"; // 👈 important
+
+const server = app.listen(PORT, HOST, () => {
   console.log("server is working on port " + PORT);
 });
-
+app.get("/", (req, res) => {
+  res.send("Server is live!");
+});
 // unhandled promise rejection
 process.on("unhandledRejection", (err) => {
   console.error("Error: " + err.message);

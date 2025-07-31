@@ -1,5 +1,5 @@
 const express = require("express");
-// const bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 const app = express();
 const path = require("path");
 const session = require("express-session");
@@ -22,7 +22,7 @@ const localStorage = new LocalStorage("./scratch");
 app.use(
   cors({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "PUT"],
     credentials: true,
   })
 );
@@ -31,7 +31,7 @@ app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 app.set("layout", "layouts/layout");
 app.use(bodyParser.urlencoded({ extended: true })); //For body parser
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 app.use(expressLayouts);
 app.use(express.static(__dirname + "/public"));
 app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));

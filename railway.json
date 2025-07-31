@@ -2,19 +2,27 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
+    "buildCommand": "npm install",
     "nixpacksPlan": {
       "phases": {
-        "install": {
-          "cmds": ["npm install"]
-        },
         "build": {
           "cmds": []
         },
         "start": {
-          "cmds": ["npm start"]
+          "cmds": [
+            "npm start"
+          ]
+        },
+        "install": {
+          "cmds": [
+            "npm install"
+          ]
         }
       },
-      "providers": ["node"]
+      "providers": [
+        "node",
+        "node"
+      ]
     }
   },
   "deploy": {

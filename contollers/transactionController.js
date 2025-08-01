@@ -651,7 +651,9 @@ exports.createOrder = catchAsyncErrors(async (req, res) => {
   Cashfree.XClientSecret = process.env.CASHFREE_KEY_SECRET;
   // Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 Cashfree.XEnvironment = "PROD";
-console.log("HIIIIII",Cashfree.XEnvironment);
+console.log("HIIIIII",Cashfree.XClientSecret);
+console.log("HIIIIII", Cashfree.XClientId);
+
   const { userId } = req.body;
   const order_id = `order_${randomUUID()}`;
   if (!userId) {

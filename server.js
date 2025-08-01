@@ -44,7 +44,7 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
-setTimeout(() => {
-  console.log("Exiting server after timeout (test mode)");
-  process.exit(0);
-}, 10000); // 10 seconds
+// setTimeout(() => {
+//   console.log("Exiting server after timeout (test mode)");
+//   process.exit(0);
+// }, 10000); // 10 seconds

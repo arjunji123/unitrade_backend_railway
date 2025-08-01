@@ -649,8 +649,8 @@ const activateUser = async (userId) => {
 exports.createOrder = catchAsyncErrors(async (req, res) => {
   Cashfree.XClientId = process.env.CASHFREE_KEY_ID;
   Cashfree.XClientSecret = process.env.CASHFREE_KEY_SECRET;
-  // Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
-Cashfree.XEnvironment = "PROD";
+  Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
+// Cashfree.XEnvironment = "PROD";
 console.log("HIIIIII",Cashfree.XClientSecret);
 console.log("HIIIIII", Cashfree.XClientId);
 

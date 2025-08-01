@@ -650,6 +650,7 @@ exports.createOrder = catchAsyncErrors(async (req, res) => {
   Cashfree.XClientId = process.env.CASHFREE_KEY_ID;
   Cashfree.XClientSecret = process.env.CASHFREE_KEY_SECRET;
   Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
+console.log(Cashfree.XEnvironment);
   const { userId } = req.body;
   const order_id = `order_${randomUUID()}`;
   if (!userId) {
@@ -686,6 +687,7 @@ exports.createOrder = catchAsyncErrors(async (req, res) => {
       },
       order_note: "",
     };
+console.log(request);
 
     console.log("Create cashfree order response for user: ", userId)
 
